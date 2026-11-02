@@ -282,7 +282,18 @@ footer a {
             🎾 Tennis
         </button>
     </div>
+<div class="search-panel">
+    <input
+        type="text"
+        id="teamSearch"
+        placeholder="🔍 Kërko skuadër ose kampionat..."
+        oninput="renderMatches()"
+    >
 
+    <select id="leagueFilter" onchange="renderMatches()">
+        <option value="all">Të gjitha kampionatet</option>
+    </select>
+</div>
     <h2 class="section-title" id="live">Matches & Live Scores</h2>
 
     <div class="status-line" id="updateStatus">
