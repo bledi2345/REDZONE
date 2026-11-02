@@ -536,22 +536,73 @@ function setFilter(filter, button) {
 
 function renderMatches() {
     const container = document.getElementById("matches");
+    const searchInput = document.getElementById("teamSearch");
+    const leagueSelect = document.getElementById("leagueFilter");
+
+    const searchText = searchInput
+        ? searchInput.value.toLowerCase().trim()
+        : "";
+
+    const selectedLeague = leagueSelect
+        ? leagueSelect.value
+        : "all";
+
+    // Create the league list automatically
+    const leagues = [...new Set(
+        allMatches.map(match => match.competition).filter(Boolean)
+    )].sort();
+
+    if (leagueSelect) {
+        const previousValue = leagueSelect.value;
+
+        leagueSelect.innerHTML =
+            '<option value="all">Të gjitha kampionatet</option>';
+
+        leagues.forEach(league => {
+            const option = document.createElement("option");
+            option.value = league;
+            option.textContent = league;
+            leagueSelect.appendChild(option);
+        });
+
+        leagueSelect.value = leagues.includes(previousValue)
+            ? previousValue
+            : "all";
+    }
 
     let filteredMatches = allMatches;
 
     if (currentFilter === "live") {
-        filteredMatches = allMatches.filter(isLive);
+        filteredMatches = filteredMatches.filter(isLive);
     } else if (currentFilter === "upcoming") {
-        filteredMatches = allMatches.filter(isUpcoming);
+        filteredMatches = filteredMatches.filter(isUpcoming);
     } else if (currentFilter === "finished") {
-        filteredMatches = allMatches.filter(isFinished);
+        filteredMatches = filteredMatches.filter(isFinished);
+    }
+
+    if (selectedLeague !== "all") {
+        filteredMatches = filteredMatches.filter(
+            match => match.competition === selectedLeague
+        );
+    }
+
+    if (searchText) {
+        filteredMatches = filteredMatches.filter(match => {
+            const home = (match.home || "").toLowerCase();
+            const away = (match.away || "").toLowerCase();
+            const league = (match.competition || "").toLowerCase();
+
+            return home.includes(searchText) ||
+                   away.includes(searchText) ||
+                   league.includes(searchText);
+        });
     }
 
     container.replaceChildren();
 
     if (filteredMatches.length === 0) {
         showMessage(
-            "Nuk ka ndeshje në këtë kategori për momentin.",
+            "Nuk u gjet asnjë ndeshje.",
             "empty"
         );
         return;
@@ -595,7 +646,6 @@ function renderMatches() {
 
         const matchStatus = document.createElement("div");
         matchStatus.className = "match-status";
-
         matchStatus.textContent =
             match.status_text || "Scheduled";
 
