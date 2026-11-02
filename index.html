@@ -662,9 +662,19 @@ function renderMatches() {
         card.appendChild(league);
         card.appendChild(teams);
         card.appendChild(date);
-        card.appendChild(matchStatus);
+       card.appendChild(matchStatus);
 
-        container.appendChild(card);
+card.style.cursor = "pointer";
+
+card.addEventListener("click", () => {
+    if (match.url) {
+        window.open(match.url, "_blank");
+    } else {
+        alert("Detajet për këtë ndeshje nuk janë të disponueshme.");
+    }
+});
+
+container.appendChild(card);
     });
 }
 
