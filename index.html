@@ -258,8 +258,14 @@ footer a {
 
 <main class="container" id="sports">
 
-    <h2 class="section-title">SPORTS CENTER</h2>
+   <h2 class="section-title" id="live">MATCH CENTER</h2>
 
+<div class="categories">
+    <button class="category active" onclick="setFilter('all', this)">Të gjitha</button>
+    <button class="category" onclick="setFilter('live', this)">🔴 LIVE</button>
+    <button class="category" onclick="setFilter('upcoming', this)">📅 Në vijim</button>
+    <button class="category" onclick="setFilter('finished', this)">✓ Të përfunduara</button>
+</div>
     <div class="categories">
         <button class="category active"
             onclick="loadMatches('football', this)">
@@ -315,10 +321,12 @@ footer a {
 </footer>
 
 <script>
-
-const API = "https://sportscore.com/api/widget/matches/";
+const API = "https://sportscore.com/api/v1/fixtures/";
 
 let currentSport = "football";
+let currentFilter = "all";
+let allMatches = [];
+let requestNumber = 0;
 
 function createTeam(name, logo) {
     const team = document.createElement("div");
@@ -337,19 +345,18 @@ function createTeam(name, logo) {
     const label = document.createElement("div");
     label.className = "team-name";
     label.textContent = name || "Unknown";
-
     team.appendChild(label);
 
     return team;
 }
 
 function formatDate(value) {
-    if (!value) return "Time unavailable";
+    if (!value) return "Ora e padisponueshme";
 
     const date = new Date(value);
 
     if (Number.isNaN(date.getTime())) {
-        return "Time unavailable";
+        return "Ora e padisponueshme";
     }
 
     return date.toLocaleString("sq-AL", {
@@ -367,154 +374,247 @@ function showMessage(message, className) {
 
     box.className = className;
     box.textContent = message;
-
     container.replaceChildren(box);
 }
 
-async function loadMatches(sport, button) {
+function getStatus(match) {
+    return String(match.status || "").toLowerCase();
+}
 
+function isLive(match) {
+    return ["live", "in_progress"].includes(getStatus(match));
+}
+
+function isFinished(match) {
+    return getStatus(match) === "finished";
+}
+
+function isUpcoming(match) {
+    return ["upcoming", "scheduled", "not_started"].includes(
+        getStatus(match)
+    );
+}
+
+async function fetchDay(date, upcomingOnly = false) {
+    let url =
+        `${API}?sport=${encodeURIComponent(currentSport)}` +
+        `&date=${date}&limit=200`;
+
+    if (upcomingOnly) {
+        url += "&status=upcoming";
+    }
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+        throw new Error("API error: " + response.status);
+    }
+
+    const data = await response.json();
+
+    return Array.isArray(data.matches) ? data.matches : [];
+}
+
+function getDateAfter(days) {
+    const date = new Date();
+    date.setUTCDate(date.getUTCDate() + days);
+    return date.toISOString().slice(0, 10);
+}
+
+async function loadMatches(sport, button) {
     if (sport) {
         currentSport = sport;
     }
 
-    document.querySelectorAll(".category").forEach(item => {
-        item.classList.remove("active");
-    });
+    if (button && button.parentElement) {
+        button.parentElement.querySelectorAll(".category")
+            .forEach(item => item.classList.remove("active"));
 
-    if (button) {
         button.classList.add("active");
-    } else {
-        const activeButton = document.querySelector(
-            `.category[onclick*="${currentSport}"]`
-        );
-
-        if (activeButton) {
-            activeButton.classList.add("active");
-        }
     }
 
-    const container = document.getElementById("matches");
+    const thisRequest = ++requestNumber;
+
+    showMessage("Duke ngarkuar ndeshjet...", "loading");
+
     const updateStatus = document.getElementById("updateStatus");
 
-    showMessage("Loading matches...", "loading");
-
     try {
+        const dates = [];
 
-        const url =
-            `${API}?sport=${encodeURIComponent(currentSport)}&limit=20&src=redzone`;
-
-        const response = await fetch(url);
-
-        if (!response.ok) {
-            throw new Error("API error: " + response.status);
+        for (let day = 0; day <= 7; day++) {
+            dates.push(getDateAfter(day));
         }
 
-        const data = await response.json();
-
-        container.replaceChildren();
-
-        if (!Array.isArray(data.matches) ||
-            data.matches.length === 0) {
-
-            showMessage(
-                "No matches available at the moment.",
-                "empty"
-            );
-
-            return;
-        }
-
-        data.matches.forEach(match => {
-
-            const card = document.createElement("article");
-            card.className = "match";
-
-            const league = document.createElement("div");
-            league.className = "league";
-            league.textContent =
-                match.competition || currentSport.toUpperCase();
-
-            const teams = document.createElement("div");
-            teams.className = "teams";
-
-            const home = createTeam(
-                match.home,
-                match.home_logo
-            );
-
-            const away = createTeam(
-                match.away,
-                match.away_logo
-            );
-
-            const score = document.createElement("div");
-            score.className = "score";
-
-            const status = String(match.status || "").toLowerCase();
-
-            const hasScore =
-                status === "live" ||
-                status === "finished" ||
-                status === "in_progress";
-
-            score.textContent = hasScore
-                ? `${match.home_score ?? 0} - ${match.away_score ?? 0}`
-                : "VS";
-
-            teams.appendChild(home);
-            teams.appendChild(score);
-            teams.appendChild(away);
-
-            const date = document.createElement("div");
-            date.className = "match-info";
-            date.textContent = formatDate(match.time);
-
-            const matchStatus = document.createElement("div");
-            matchStatus.className = "match-status";
-
-            matchStatus.textContent =
-                match.status_text || "Scheduled";
-
-            if (status === "live" || status === "in_progress") {
-                matchStatus.classList.add("live");
-                matchStatus.textContent =
-                    "🔴 " + (match.status_text || "LIVE");
-            } else if (status === "finished") {
-                matchStatus.classList.add("finished");
-            }
-
-            card.appendChild(league);
-            card.appendChild(teams);
-            card.appendChild(date);
-            card.appendChild(matchStatus);
-
-            container.appendChild(card);
-        });
-
-        updateStatus.textContent =
-            `Showing ${data.matches.length} matches · Updated ${new Date().toLocaleTimeString("sq-AL")}`;
-
-    } catch (error) {
-
-        console.error(error);
-
-        showMessage(
-            "Could not load matches. Please try again.",
-            "error"
+        const results = await Promise.allSettled(
+            dates.map((date, index) =>
+                fetchDay(date, index !== 0)
+            )
         );
 
-        updateStatus.textContent =
-            "Connection problem. Try again later.";
+        if (thisRequest !== requestNumber) return;
+
+        let matches = [];
+        let successfulRequests = 0;
+
+        results.forEach(result => {
+            if (result.status === "fulfilled") {
+                successfulRequests++;
+                matches.push(...result.value);
+            }
+        });
+
+        if (successfulRequests === 0) {
+            throw new Error("No API requests succeeded");
+        }
+
+        // Remove duplicate matches
+        const uniqueMatches = new Map();
+
+        matches.forEach(match => {
+            const key = match.url ||
+                `${match.home}-${match.away}-${match.time}`;
+
+            uniqueMatches.set(key, match);
+        });
+
+        allMatches = Array.from(uniqueMatches.values());
+
+        // Sort matches by starting time
+        allMatches.sort((a, b) =>
+            new Date(a.time || 0) - new Date(b.time || 0)
+        );
+
+        renderMatches();
+
+        if (updateStatus) {
+            updateStatus.textContent =
+                `REDZONE · ${allMatches.length} ndeshje · Përditësuar ${
+                    new Date().toLocaleTimeString("sq-AL")
+                }`;
+        }
+
+    } catch (error) {
+        console.error(error);
+
+        if (thisRequest === requestNumber) {
+            showMessage(
+                "Nuk mund të ngarkohen ndeshjet. Provo përsëri.",
+                "error"
+            );
+
+            if (updateStatus) {
+                updateStatus.textContent = "Problem me lidhjen.";
+            }
+        }
     }
 }
 
+function setFilter(filter, button) {
+    currentFilter = filter;
+
+    if (button && button.parentElement) {
+        button.parentElement.querySelectorAll(".category")
+            .forEach(item => item.classList.remove("active"));
+
+        button.classList.add("active");
+    }
+
+    renderMatches();
+}
+
+function renderMatches() {
+    const container = document.getElementById("matches");
+
+    let filteredMatches = allMatches;
+
+    if (currentFilter === "live") {
+        filteredMatches = allMatches.filter(isLive);
+    } else if (currentFilter === "upcoming") {
+        filteredMatches = allMatches.filter(isUpcoming);
+    } else if (currentFilter === "finished") {
+        filteredMatches = allMatches.filter(isFinished);
+    }
+
+    container.replaceChildren();
+
+    if (filteredMatches.length === 0) {
+        showMessage(
+            "Nuk ka ndeshje në këtë kategori për momentin.",
+            "empty"
+        );
+        return;
+    }
+
+    filteredMatches.forEach(match => {
+        const card = document.createElement("article");
+        card.className = "match";
+
+        const league = document.createElement("div");
+        league.className = "league";
+        league.textContent =
+            match.competition || currentSport.toUpperCase();
+
+        const teams = document.createElement("div");
+        teams.className = "teams";
+
+        const home = createTeam(match.home, match.home_logo);
+        const away = createTeam(match.away, match.away_logo);
+
+        const score = document.createElement("div");
+        score.className = "score";
+
+        const hasScore =
+            match.home_score !== null &&
+            match.home_score !== undefined &&
+            match.away_score !== null &&
+            match.away_score !== undefined;
+
+        score.textContent = hasScore
+            ? `${match.home_score} - ${match.away_score}`
+            : "VS";
+
+        teams.appendChild(home);
+        teams.appendChild(score);
+        teams.appendChild(away);
+
+        const date = document.createElement("div");
+        date.className = "match-info";
+        date.textContent = formatDate(match.time);
+
+        const matchStatus = document.createElement("div");
+        matchStatus.className = "match-status";
+
+        matchStatus.textContent =
+            match.status_text || "Scheduled";
+
+        if (isLive(match)) {
+            matchStatus.classList.add("live");
+            matchStatus.textContent =
+                "🔴 " + (match.status_text || "LIVE");
+        } else if (isFinished(match)) {
+            matchStatus.classList.add("finished");
+            matchStatus.textContent =
+                match.status_text || "Përfunduar";
+        }
+
+        card.appendChild(league);
+        card.appendChild(teams);
+        card.appendChild(date);
+        card.appendChild(matchStatus);
+
+        container.appendChild(card);
+    });
+}
+
+// Load football when the page opens
 loadMatches("football");
 
+// Refresh matches every 5 minutes
 setInterval(() => {
     loadMatches(currentSport);
-}, 60000);
+}, 300000);
 
 </script>
-
 </body>
 </html>
