@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>REDZONE | Sports Center</title>
+<title>REDZONE | Live Sports</title>
 
 <style>
 * {
@@ -31,7 +31,7 @@ header {
 
 .logo {
     font-size: 30px;
-    font-weight: bold;
+    font-weight: 900;
     color: #e50925;
     letter-spacing: 2px;
 }
@@ -39,7 +39,7 @@ header {
 nav a {
     color: white;
     text-decoration: none;
-    margin-left: 20px;
+    margin-left: 18px;
     font-weight: bold;
 }
 
@@ -49,11 +49,11 @@ nav a:hover {
 
 .hero {
     padding: 65px 6%;
-    background: linear-gradient(120deg, #240006, #090909 75%);
+    background: linear-gradient(120deg, #350009, #090909 80%);
 }
 
 .hero h1 {
-    font-size: 48px;
+    font-size: 45px;
     margin-bottom: 15px;
 }
 
@@ -63,7 +63,6 @@ nav a:hover {
 
 .hero p {
     color: #bbb;
-    font-size: 17px;
 }
 
 .container {
@@ -91,6 +90,7 @@ nav a:hover {
     padding: 12px 20px;
     border-radius: 6px;
     cursor: pointer;
+    font-weight: bold;
 }
 
 .category.active,
@@ -99,10 +99,16 @@ nav a:hover {
     border-color: #e50925;
 }
 
+.status-line {
+    color: #aaa;
+    margin-bottom: 20px;
+    font-size: 13px;
+}
+
 .matches {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
+    gap: 18px;
 }
 
 .match {
@@ -119,64 +125,87 @@ nav a:hover {
 }
 
 .league {
-    color: #999;
+    color: #aaa;
     font-size: 12px;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
 }
 
 .teams {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 16px;
-    font-weight: bold;
-    gap: 10px;
-}
-
-.vs {
-    color: #e50925;
-    font-size: 13px;
-}
-
-.time {
-    color: #aaa;
-    margin-top: 18px;
-    font-size: 13px;
-}
-
-.odds {
-    display: flex;
     gap: 8px;
-    margin-top: 18px;
 }
 
-.odds button {
+.team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     flex: 1;
-    background: #252525;
-    border: 1px solid #393939;
+    gap: 9px;
+    min-width: 0;
+}
+
+.team img {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+}
+
+.team-name {
+    font-size: 13px;
+    font-weight: bold;
+    overflow-wrap: anywhere;
+}
+
+.score {
+    font-size: 21px;
+    font-weight: 900;
     color: white;
-    padding: 12px 5px;
-    border-radius: 5px;
-    cursor: pointer;
+    white-space: nowrap;
 }
 
-.odds button:hover,
-.odds button.selected {
-    background: #e50925;
-    border-color: #e50925;
-}
-
-.demo {
-    color: #ffb000;
+.match-info {
+    text-align: center;
+    margin-top: 20px;
+    color: #aaa;
     font-size: 12px;
+}
+
+.match-status {
+    text-align: center;
     margin-top: 12px;
+    color: #ddd;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.live {
+    color: #ff3048;
+}
+
+.finished {
+    color: #aaa;
+}
+
+.loading,
+.error,
+.empty {
+    background: #151515;
+    border-radius: 8px;
+    padding: 25px;
+    color: #ccc;
+    text-align: center;
+    grid-column: 1 / -1;
 }
 
 .results {
     background: #151515;
     border-radius: 10px;
     padding: 22px;
-    margin-top: 30px;
+    margin-top: 35px;
 }
 
 footer {
@@ -185,16 +214,26 @@ footer {
     padding: 30px;
     border-top: 1px solid #292929;
     margin-top: 40px;
+    line-height: 2;
 }
 
-@media (max-width: 600px) {
+footer a {
+    color: #e50925;
+    text-decoration: none;
+}
+
+@media(max-width: 600px) {
     .hero h1 {
-        font-size: 34px;
+        font-size: 32px;
     }
 
     nav a {
-        margin-left: 10px;
+        margin-left: 8px;
         font-size: 13px;
+    }
+
+    .container {
+        padding: 25px 5%;
     }
 }
 </style>
@@ -204,11 +243,11 @@ footer {
 
 <header>
     <div class="logo">REDZONE</div>
+
     <nav>
         <a href="#home">Home</a>
         <a href="#sports">Sports</a>
         <a href="#live">Live</a>
-        <a href="#results">Results</a>
     </nav>
 </header>
 
@@ -222,92 +261,42 @@ footer {
     <h2 class="section-title">SPORTS CENTER</h2>
 
     <div class="categories">
-        <button class="category active" onclick="filterMatches('all', this)">All</button>
-        <button class="category" onclick="filterMatches('football', this)">⚽ Football</button>
-        <button class="category" onclick="filterMatches('basketball', this)">🏀 Basketball</button>
-        <button class="category" onclick="filterMatches('tennis', this)">🎾 Tennis</button>
+        <button class="category active"
+            onclick="loadMatches('football', this)">
+            ⚽ Football
+        </button>
+
+        <button class="category"
+            onclick="loadMatches('basketball', this)">
+            🏀 Basketball
+        </button>
+
+        <button class="category"
+            onclick="loadMatches('tennis', this)">
+            🎾 Tennis
+        </button>
     </div>
 
-    <h2 class="section-title" id="live">Upcoming Matches</h2>
+    <h2 class="section-title" id="live">Matches & Live Scores</h2>
+
+    <div class="status-line" id="updateStatus">
+        Connecting to sports data...
+    </div>
 
     <div class="matches" id="matches">
-
-        <article class="match" data-sport="football">
-            <div class="league">FOOTBALL • DEMO MATCH</div>
-            <div class="teams">
-                <span>Real Madrid</span>
-                <span class="vs">VS</span>
-                <span>Barcelona</span>
-            </div>
-            <div class="time">Illustrative schedule</div>
-            <div class="odds">
-                <button onclick="selectDemo(this)">1</button>
-                <button onclick="selectDemo(this)">X</button>
-                <button onclick="selectDemo(this)">2</button>
-            </div>
-            <div class="demo">Demo information only</div>
-        </article>
-
-        <article class="match" data-sport="football">
-            <div class="league">FOOTBALL • DEMO MATCH</div>
-            <div class="teams">
-                <span>Liverpool</span>
-                <span class="vs">VS</span>
-                <span>Arsenal</span>
-            </div>
-            <div class="time">Illustrative schedule</div>
-            <div class="odds">
-                <button onclick="selectDemo(this)">1</button>
-                <button onclick="selectDemo(this)">X</button>
-                <button onclick="selectDemo(this)">2</button>
-            </div>
-            <div class="demo">Demo information only</div>
-        </article>
-
-        <article class="match" data-sport="basketball">
-            <div class="league">BASKETBALL • DEMO MATCH</div>
-            <div class="teams">
-                <span>Lakers</span>
-                <span class="vs">VS</span>
-                <span>Warriors</span>
-            </div>
-            <div class="time">Illustrative schedule</div>
-            <div class="odds">
-                <button onclick="selectDemo(this)">1</button>
-                <button onclick="selectDemo(this)">2</button>
-            </div>
-            <div class="demo">Demo information only</div>
-        </article>
-
-        <article class="match" data-sport="tennis">
-            <div class="league">TENNIS • DEMO MATCH</div>
-            <div class="teams">
-                <span>Player A</span>
-                <span class="vs">VS</span>
-                <span>Player B</span>
-            </div>
-            <div class="time">Illustrative schedule</div>
-            <div class="odds">
-                <button onclick="selectDemo(this)">1</button>
-                <button onclick="selectDemo(this)">2</button>
-            </div>
-            <div class="demo">Demo information only</div>
-        </article>
-
+        <div class="loading">Loading matches...</div>
     </div>
 
-    <section class="results" id="results">
-        <h2 class="section-title">Latest Results</h2>
-        <p>Match results will appear here when real sports data is connected.</p>
-    </section>
-
     <section class="results">
-        <h2 class="section-title">REDZONE Information</h2>
+        <h2 class="section-title">About REDZONE</h2>
         <p>
-            This is a demonstration sports platform.
-            Match names and selections are illustrative.
-            No real-time data, real-money betting, deposits
-            or payouts are provided.
+            REDZONE brings sports information and match results
+            together in one place.
+        </p>
+        <br>
+        <p>
+            Match data is provided by SportScore.
+            This is a sports information platform.
         </p>
     </section>
 
@@ -315,127 +304,217 @@ footer {
 
 <footer>
     <p>© 2026 REDZONE. All rights reserved.</p>
-    <p class="demo">Sports demonstration platform</p>
+    <p>
+        Data provided by
+        <a href="https://sportscore.com/"
+           target="_blank"
+           rel="dofollow">
+           SportScore
+        </a>
+    </p>
 </footer>
 
 <script>
-function filterMatches(sport, button) {
-    const matches = document.querySelectorAll(".match");
-    const categories = document.querySelectorAll(".category");
 
-    categories.forEach(category => {
-        category.classList.remove("active");
-    });
-
-    button.classList.add("active");
-
-    matches.forEach(match => {
-        if (sport === "all" || match.dataset.sport === sport) {
-            match.style.display = "block";
-        } else {
-            match.style.display = "none";
-        }
-    });
-}
-
-function selectDemo(button) {
-    const buttons = button.parentElement.querySelectorAll("button");
-
-    buttons.forEach(item => {
-        item.classList.remove("selected");
-    });
-
-    button.classList.add("selected");
-}
-</script>
 const API = "https://sportscore.com/api/widget/matches/";
+
 let currentSport = "football";
 
-async function loadMatches(sport = currentSport) {
-    currentSport = sport;
+function createTeam(name, logo) {
+    const team = document.createElement("div");
+    team.className = "team";
 
-    const container = document.getElementById("matches");
-    container.innerHTML = "<p>Po ngarkohen ndeshjet...</p>";
-
-    try {
-        const response = await fetch(
-            `${API}?sport=${sport}&limit=20`
-        );
-
-        if (!response.ok) {
-            throw new Error("Gabim gjatë marrjes së ndeshjeve");
-        }
-
-        const data = await response.json();
-
-        container.innerHTML = "";
-
-        if (!data.matches || data.matches.length === 0) {
-            container.innerHTML =
-                "<p>Nuk ka ndeshje për momentin.</p>";
-            return;
-        }
-
-        data.matches.forEach(match => {
-            const date = new Date(match.time);
-
-            const time = date.toLocaleString("sq-AL", {
-                timeZone: "Europe/Tirane",
-                day: "2-digit",
-                month: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit"
-            });
-
-            const isLive = match.status === "live";
-            const isFinished = match.status === "finished";
-
-            const score = isLive || isFinished
-                ? `${match.home_score ?? 0} - ${match.away_score ?? 0}`
-                : "VS";
-
-            const card = document.createElement("article");
-            card.className = "match";
-
-            card.innerHTML = `
-                <div class="league">
-                    ${match.competition || sport.toUpperCase()}
-                </div>
-
-                <div class="teams">
-                    <span>${match.home}</span>
-                    <span class="vs">${score}</span>
-                    <span>${match.away}</span>
-                </div>
-
-                <div class="time">${time}</div>
-
-                <div class="demo">
-                    ${isLive ? "🔴 LIVE" : match.status_text || "Scheduled"}
-                </div>
-            `;
-
-            container.appendChild(card);
-        });
-
-    } catch (error) {
-        container.innerHTML =
-            "<p>Nuk u ngarkuan ndeshjet. Provo përsëri.</p>";
-        console.error(error);
+    if (logo) {
+        const img = document.createElement("img");
+        img.src = logo;
+        img.alt = name || "Team";
+        img.onerror = function() {
+            this.style.display = "none";
+        };
+        team.appendChild(img);
     }
+
+    const label = document.createElement("div");
+    label.className = "team-name";
+    label.textContent = name || "Unknown";
+
+    team.appendChild(label);
+
+    return team;
 }
 
-function filterMatches(sport, button) {
+function formatDate(value) {
+    if (!value) return "Time unavailable";
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return "Time unavailable";
+    }
+
+    return date.toLocaleString("sq-AL", {
+        timeZone: "Europe/Tirane",
+        day: "2-digit",
+        month: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+}
+
+function showMessage(message, className) {
+    const container = document.getElementById("matches");
+    const box = document.createElement("div");
+
+    box.className = className;
+    box.textContent = message;
+
+    container.replaceChildren(box);
+}
+
+async function loadMatches(sport, button) {
+
+    if (sport) {
+        currentSport = sport;
+    }
+
     document.querySelectorAll(".category").forEach(item => {
         item.classList.remove("active");
     });
 
-    button.classList.add("active");
-    loadMatches(sport);
+    if (button) {
+        button.classList.add("active");
+    } else {
+        const activeButton = document.querySelector(
+            `.category[onclick*="${currentSport}"]`
+        );
+
+        if (activeButton) {
+            activeButton.classList.add("active");
+        }
+    }
+
+    const container = document.getElementById("matches");
+    const updateStatus = document.getElementById("updateStatus");
+
+    showMessage("Loading matches...", "loading");
+
+    try {
+
+        const url =
+            `${API}?sport=${encodeURIComponent(currentSport)}&limit=20&src=redzone`;
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("API error: " + response.status);
+        }
+
+        const data = await response.json();
+
+        container.replaceChildren();
+
+        if (!Array.isArray(data.matches) ||
+            data.matches.length === 0) {
+
+            showMessage(
+                "No matches available at the moment.",
+                "empty"
+            );
+
+            return;
+        }
+
+        data.matches.forEach(match => {
+
+            const card = document.createElement("article");
+            card.className = "match";
+
+            const league = document.createElement("div");
+            league.className = "league";
+            league.textContent =
+                match.competition || currentSport.toUpperCase();
+
+            const teams = document.createElement("div");
+            teams.className = "teams";
+
+            const home = createTeam(
+                match.home,
+                match.home_logo
+            );
+
+            const away = createTeam(
+                match.away,
+                match.away_logo
+            );
+
+            const score = document.createElement("div");
+            score.className = "score";
+
+            const status = String(match.status || "").toLowerCase();
+
+            const hasScore =
+                status === "live" ||
+                status === "finished" ||
+                status === "in_progress";
+
+            score.textContent = hasScore
+                ? `${match.home_score ?? 0} - ${match.away_score ?? 0}`
+                : "VS";
+
+            teams.appendChild(home);
+            teams.appendChild(score);
+            teams.appendChild(away);
+
+            const date = document.createElement("div");
+            date.className = "match-info";
+            date.textContent = formatDate(match.time);
+
+            const matchStatus = document.createElement("div");
+            matchStatus.className = "match-status";
+
+            matchStatus.textContent =
+                match.status_text || "Scheduled";
+
+            if (status === "live" || status === "in_progress") {
+                matchStatus.classList.add("live");
+                matchStatus.textContent =
+                    "🔴 " + (match.status_text || "LIVE");
+            } else if (status === "finished") {
+                matchStatus.classList.add("finished");
+            }
+
+            card.appendChild(league);
+            card.appendChild(teams);
+            card.appendChild(date);
+            card.appendChild(matchStatus);
+
+            container.appendChild(card);
+        });
+
+        updateStatus.textContent =
+            `Showing ${data.matches.length} matches · Updated ${new Date().toLocaleTimeString("sq-AL")}`;
+
+    } catch (error) {
+
+        console.error(error);
+
+        showMessage(
+            "Could not load matches. Please try again.",
+            "error"
+        );
+
+        updateStatus.textContent =
+            "Connection problem. Try again later.";
+    }
 }
 
 loadMatches("football");
 
-setInterval(() => loadMatches(), 60000);
+setInterval(() => {
+    loadMatches(currentSport);
+}, 60000);
+
+</script>
+
 </body>
 </html>
