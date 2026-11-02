@@ -1,28 +1,353 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sq">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>REDZONE | Sports Arena</title>
+<title>REDZONE | Sports Center</title>
+
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#090b10;color:#f5f5f5;font-family:Arial,sans-serif}
-header{height:72px;background:#11141c;border-bottom:1px solid #292e39;display:flex;align-items:center;justify-content:space-between;padding:0 5%;position:sticky;top:0;z-index:5}
-.logo{font-size:27px;font-weight:900;letter-spacing:2px}
-.logo span{color:#ed2638}
-nav{display:flex;gap:23px}
-nav a{color:#aaa;text-decoration:none;font-size:14px}
-nav a:hover{color:#ed2638}
-button{cursor:pointer}
-.demo{background:#ed2638;color:white;border:0;padding:11px 20px;border-radius:6px;font-weight:bold}
-.layout{display:grid;grid-template-columns:190px minmax(0,1fr) 270px;gap:18px;padding:25px 3%;max-width:1600px;margin:auto}
-.panel,.card{background:#121620;border:1px solid #252b37;border-radius:10px}
-.sidebar{padding:18px;height:max-content}
-.sidebar h3{font-size:11px;color:#777;margin:12px 0}
-.sidebar a{display:block;color:#bbb;text-decoration:none;padding:12px;border-radius:6px;font-size:14px}
-.sidebar a:hover{background:#222a38;color:white}
-.hero{background:linear-gradient(110deg,#40101d,#151923 75%);border:1px solid #652330;border-radius:12px;padding:30px;margin-bottom:22px}
-.hero small{color:#ff6977;font-weight:bold;letter-spacing:2px}
-.hero h1{font-size:36px;margin:13px 0}
-.hero p{color:#aaa;font-size:14px;line-height:1.6}
-.section-title{display:flex;justify-content:space
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #090909;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    background: #111;
+    border-bottom: 2px solid #e50925;
+    padding: 20px 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.logo {
+    font-size: 30px;
+    font-weight: bold;
+    color: #e50925;
+    letter-spacing: 2px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 20px;
+    font-weight: bold;
+}
+
+nav a:hover {
+    color: #e50925;
+}
+
+.hero {
+    padding: 65px 6%;
+    background: linear-gradient(120deg, #240006, #090909 75%);
+}
+
+.hero h1 {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.hero h1 span {
+    color: #e50925;
+}
+
+.hero p {
+    color: #bbb;
+    font-size: 17px;
+}
+
+.container {
+    padding: 35px 6%;
+}
+
+.section-title {
+    font-size: 25px;
+    margin-bottom: 22px;
+    border-left: 4px solid #e50925;
+    padding-left: 12px;
+}
+
+.categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.category {
+    background: #1b1b1b;
+    color: white;
+    border: 1px solid #333;
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.category.active,
+.category:hover {
+    background: #e50925;
+    border-color: #e50925;
+}
+
+.matches {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.match {
+    background: #151515;
+    border: 1px solid #292929;
+    border-radius: 10px;
+    padding: 20px;
+    transition: 0.2s;
+}
+
+.match:hover {
+    border-color: #e50925;
+    transform: translateY(-3px);
+}
+
+.league {
+    color: #999;
+    font-size: 12px;
+    margin-bottom: 18px;
+}
+
+.teams {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+    font-weight: bold;
+    gap: 10px;
+}
+
+.vs {
+    color: #e50925;
+    font-size: 13px;
+}
+
+.time {
+    color: #aaa;
+    margin-top: 18px;
+    font-size: 13px;
+}
+
+.odds {
+    display: flex;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.odds button {
+    flex: 1;
+    background: #252525;
+    border: 1px solid #393939;
+    color: white;
+    padding: 12px 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.odds button:hover,
+.odds button.selected {
+    background: #e50925;
+    border-color: #e50925;
+}
+
+.demo {
+    color: #ffb000;
+    font-size: 12px;
+    margin-top: 12px;
+}
+
+.results {
+    background: #151515;
+    border-radius: 10px;
+    padding: 22px;
+    margin-top: 30px;
+}
+
+footer {
+    text-align: center;
+    color: #777;
+    padding: 30px;
+    border-top: 1px solid #292929;
+    margin-top: 40px;
+}
+
+@media (max-width: 600px) {
+    .hero h1 {
+        font-size: 34px;
+    }
+
+    nav a {
+        margin-left: 10px;
+        font-size: 13px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">REDZONE</div>
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#sports">Sports</a>
+        <a href="#live">Live</a>
+        <a href="#results">Results</a>
+    </nav>
+</header>
+
+<section class="hero" id="home">
+    <h1>WELCOME TO <span>REDZONE</span></h1>
+    <p>Your sports world. All in one place.</p>
+</section>
+
+<main class="container" id="sports">
+
+    <h2 class="section-title">SPORTS CENTER</h2>
+
+    <div class="categories">
+        <button class="category active" onclick="filterMatches('all', this)">All</button>
+        <button class="category" onclick="filterMatches('football', this)">⚽ Football</button>
+        <button class="category" onclick="filterMatches('basketball', this)">🏀 Basketball</button>
+        <button class="category" onclick="filterMatches('tennis', this)">🎾 Tennis</button>
+    </div>
+
+    <h2 class="section-title" id="live">Upcoming Matches</h2>
+
+    <div class="matches" id="matches">
+
+        <article class="match" data-sport="football">
+            <div class="league">FOOTBALL • DEMO MATCH</div>
+            <div class="teams">
+                <span>Real Madrid</span>
+                <span class="vs">VS</span>
+                <span>Barcelona</span>
+            </div>
+            <div class="time">Illustrative schedule</div>
+            <div class="odds">
+                <button onclick="selectDemo(this)">1</button>
+                <button onclick="selectDemo(this)">X</button>
+                <button onclick="selectDemo(this)">2</button>
+            </div>
+            <div class="demo">Demo information only</div>
+        </article>
+
+        <article class="match" data-sport="football">
+            <div class="league">FOOTBALL • DEMO MATCH</div>
+            <div class="teams">
+                <span>Liverpool</span>
+                <span class="vs">VS</span>
+                <span>Arsenal</span>
+            </div>
+            <div class="time">Illustrative schedule</div>
+            <div class="odds">
+                <button onclick="selectDemo(this)">1</button>
+                <button onclick="selectDemo(this)">X</button>
+                <button onclick="selectDemo(this)">2</button>
+            </div>
+            <div class="demo">Demo information only</div>
+        </article>
+
+        <article class="match" data-sport="basketball">
+            <div class="league">BASKETBALL • DEMO MATCH</div>
+            <div class="teams">
+                <span>Lakers</span>
+                <span class="vs">VS</span>
+                <span>Warriors</span>
+            </div>
+            <div class="time">Illustrative schedule</div>
+            <div class="odds">
+                <button onclick="selectDemo(this)">1</button>
+                <button onclick="selectDemo(this)">2</button>
+            </div>
+            <div class="demo">Demo information only</div>
+        </article>
+
+        <article class="match" data-sport="tennis">
+            <div class="league">TENNIS • DEMO MATCH</div>
+            <div class="teams">
+                <span>Player A</span>
+                <span class="vs">VS</span>
+                <span>Player B</span>
+            </div>
+            <div class="time">Illustrative schedule</div>
+            <div class="odds">
+                <button onclick="selectDemo(this)">1</button>
+                <button onclick="selectDemo(this)">2</button>
+            </div>
+            <div class="demo">Demo information only</div>
+        </article>
+
+    </div>
+
+    <section class="results" id="results">
+        <h2 class="section-title">Latest Results</h2>
+        <p>Match results will appear here when real sports data is connected.</p>
+    </section>
+
+    <section class="results">
+        <h2 class="section-title">REDZONE Information</h2>
+        <p>
+            This is a demonstration sports platform.
+            Match names and selections are illustrative.
+            No real-time data, real-money betting, deposits
+            or payouts are provided.
+        </p>
+    </section>
+
+</main>
+
+<footer>
+    <p>© 2026 REDZONE. All rights reserved.</p>
+    <p class="demo">Sports demonstration platform</p>
+</footer>
+
+<script>
+function filterMatches(sport, button) {
+    const matches = document.querySelectorAll(".match");
+    const categories = document.querySelectorAll(".category");
+
+    categories.forEach(category => {
+        category.classList.remove("active");
+    });
+
+    button.classList.add("active");
+
+    matches.forEach(match => {
+        if (sport === "all" || match.dataset.sport === sport) {
+            match.style.display = "block";
+        } else {
+            match.style.display = "none";
+        }
+    });
+}
+
+function selectDemo(button) {
+    const buttons = button.parentElement.querySelectorAll("button");
+
+    buttons.forEach(item => {
+        item.classList.remove("selected");
+    });
+
+    button.classList.add("selected");
+}
+</script>
+
+</body>
+</html>
