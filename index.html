@@ -1,146 +1,28 @@
 <!DOCTYPE html>
-<html lang="sq">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>REDZONE</title>
+<title>REDZONE | Sports Arena</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#242424;color:white;font-family:Arial,sans-serif}
-header{background:#286f59;padding:18px;display:flex;justify-content:space-between;align-items:center}
-.logo{font-size:27px;font-weight:bold;color:white}
-.logo span{color:#ff2929}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#090b10;color:#f5f5f5;font-family:Arial,sans-serif}
+header{height:72px;background:#11141c;border-bottom:1px solid #292e39;display:flex;align-items:center;justify-content:space-between;padding:0 5%;position:sticky;top:0;z-index:5}
+.logo{font-size:27px;font-weight:900;letter-spacing:2px}
+.logo span{color:#ed2638}
+nav{display:flex;gap:23px}
+nav a{color:#aaa;text-decoration:none;font-size:14px}
+nav a:hover{color:#ed2638}
 button{cursor:pointer}
-.login{max-width:390px;margin:100px auto;padding:25px;background:#171717;border:1px solid #444;border-radius:12px;text-align:center}
-.login h1{font-size:36px}
-.login input{width:100%;padding:14px;margin:9px 0;background:#303030;border:1px solid #555;color:white;border-radius:6px}
-.red{background:#d90016;color:white;border:0;padding:13px 22px;border-radius:6px;font-weight:bold}
-#site{display:none}
-nav{display:flex;gap:25px;padding:16px;background:#333;overflow:auto}
-nav button{background:none;color:white;border:0;font-size:16px}
-nav button.active{color:#ffdf36;border-bottom:3px solid #ffdf36}
-.content{display:grid;grid-template-columns:190px 1fr;gap:8px;padding:8px}
-aside{background:#333;padding:12px}
-aside div{padding:12px;border-bottom:1px solid #555}
-.search{background:#286f59;padding:13px}
-.league{background:#aaa;color:#333;padding:9px;font-weight:bold;display:grid;grid-template-columns:1fr 45%}
-.match{background:#555;display:grid;grid-template-columns:1fr 45%;padding:13px;border-bottom:1px solid #888;align-items:center}
-.teams{line-height:1.7}
-.score{color:#ffdf36;margin-left:8px}
-.odds{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
-.odds button{background:#454545;border:1px solid #777;color:#ffdf36;padding:12px 2px;font-size:16px;border-radius:3px}
-.odds button:active{background:#b90016}
-.labels{display:grid;grid-template-columns:repeat(3,1fr);text-align:center}
-.live{color:#ff3030;font-weight:bold}
-.note{padding:15px;color:#bbb;font-size:12px}
-@media(max-width:600px){
-.content{grid-template-columns:1fr}
-aside{display:flex;overflow:auto}
-aside div{white-space:nowrap}
-.match,.league{grid-template-columns:1fr 52%}
-.match{padding:10px 7px}
-.odds button{font-size:14px;padding:12px 1px}
-}
-</style>
-</head>
-<body>
-
-<header>
-<div class="logo"><span>RED</span>ZONE</div>
-<div>DEMO MODE</div>
-</header>
-
-<div id="login" class="login">
-<h1><span style="color:red">RED</span>ZONE</h1>
-<p>YOUR GAME. YOUR ZONE.</p>
-<input id="username" placeholder="Username">
-<input id="password" type="password" placeholder="Password">
-<button class="red" onclick="enterSite()">LOGIN</button>
-<p class="note">Demonstration only. No real accounts.</p>
-</div>
-
-<div id="site">
-<nav>
-<button class="active" onclick="showPage('sports',this)">SPORTS</button>
-<button onclick="showPage('live',this)">🔴 LIVE</button>
-<button onclick="showPage('slots',this)">SLOTS</button>
-<button onclick="showPage('poker',this)">POKER</button>
-</nav>
-
-<div class="search">⚽ Futboll　 🏀 Basketball　 🏓 Ping Pong</div>
-
-<div class="content">
-<aside>
-<div>⚽ Football</div>
-<div>🏀 Basketball</div>
-<div>🎾 Tennis</div>
-<div>🇪🇸 Spain La Liga</div>
-<div>🇮🇹 Italy Serie A</div>
-<div>🏴 Premier League</div>
-<div>🇩🇪 Bundesliga</div>
-</aside>
-
-<main id="matches"></main>
-</div>
-<p class="note">REDZONE © 2026 | Virtual demonstration only. No real money or prizes.</p>
-</div>
-
-<script>
-const games=[
-{league:"Spain La Liga",home:"Real Madrid",away:"Barcelona",score:"1 - 1",time:"46:55",odds:["2.10","3.40","3.15"]},
-{league:"Italy Serie A",home:"Inter",away:"Juventus",score:"0 - 1",time:"73:59",odds:["1.95","3.30","3.80"]},
-{league:"Premier League",home:"Arsenal",away:"Chelsea",score:"0 - 0",time:"34:20",odds:["2.00","3.50","3.60"]},
-{league:"Germany Bundesliga",home:"Bayern",away:"Dortmund",score:"2 - 1",time:"61:10",odds:["1.70","3.80","4.20"]}
-];
-
-function enterSite(){
-if(!document.getElementById("username").value.trim()||
-!document.getElementById("password").value){
-alert("Plotëso Username dhe Password.");
-return;
-}
-document.getElementById("login").style.display="none";
-document.getElementById("site").style.display="block";
-render("sports");
-}
-
-function showPage(page,button){
-document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
-button.classList.add("active");
-render(page);
-}
-
-function render(page){
-const main=document.getElementById("matches");
-if(page==="slots"||page==="poker"){
-main.innerHTML="<div class='league'>"+page.toUpperCase()+"</div><p class='note'>Seksioni DEMO do të ndërtohet në fazën tjetër.</p>";
-return;
-}
-let list=page==="live"?games:games;
-let html="";
-list.forEach(g=>{
-html+=`
-<div class="league">
-<span>${g.league}</span>
-<div class="labels"><span>1</span><span>X</span><span>2</span></div>
-</div>
-<div class="match">
-<div class="teams">
-${g.home}<br>${g.away}
-<div class="live">${page==="live"?"● LIVE ":""}<span class="score">${g.score}</span></div>
-<small>${g.time}</small>
-</div>
-<div class="odds">
-${g.odds.map((o,i)=>`<button onclick="selectDemo('${g.home} - ${g.away}','${['1','X','2'][i]}','${o}')">${o}</button>`).join("")}
-</div>
-</div>`;
-});
-main.innerHTML=html;
-}
-
-function selectDemo(match,selection,odd){
-alert("Zgjedhja DEMO: "+match+" | "+selection+" | Koeficienti: "+odd);
-}
-</script>
-</body>
-</html>
+.demo{background:#ed2638;color:white;border:0;padding:11px 20px;border-radius:6px;font-weight:bold}
+.layout{display:grid;grid-template-columns:190px minmax(0,1fr) 270px;gap:18px;padding:25px 3%;max-width:1600px;margin:auto}
+.panel,.card{background:#121620;border:1px solid #252b37;border-radius:10px}
+.sidebar{padding:18px;height:max-content}
+.sidebar h3{font-size:11px;color:#777;margin:12px 0}
+.sidebar a{display:block;color:#bbb;text-decoration:none;padding:12px;border-radius:6px;font-size:14px}
+.sidebar a:hover{background:#222a38;color:white}
+.hero{background:linear-gradient(110deg,#40101d,#151923 75%);border:1px solid #652330;border-radius:12px;padding:30px;margin-bottom:22px}
+.hero small{color:#ff6977;font-weight:bold;letter-spacing:2px}
+.hero h1{font-size:36px;margin:13px 0}
+.hero p{color:#aaa;font-size:14px;line-height:1.6}
+.section-title{display:flex;justify-content:space
