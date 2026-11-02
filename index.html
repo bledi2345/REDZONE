@@ -348,6 +348,94 @@ function selectDemo(button) {
     button.classList.add("selected");
 }
 </script>
+const API = "https://sportscore.com/api/widget/matches/";
+let currentSport = "football";
 
+async function loadMatches(sport = currentSport) {
+    currentSport = sport;
+
+    const container = document.getElementById("matches");
+    container.innerHTML = "<p>Po ngarkohen ndeshjet...</p>";
+
+    try {
+        const response = await fetch(
+            `${API}?sport=${sport}&limit=20`
+        );
+
+        if (!response.ok) {
+            throw new Error("Gabim gjatë marrjes së ndeshjeve");
+        }
+
+        const data = await response.json();
+
+        container.innerHTML = "";
+
+        if (!data.matches || data.matches.length === 0) {
+            container.innerHTML =
+                "<p>Nuk ka ndeshje për momentin.</p>";
+            return;
+        }
+
+        data.matches.forEach(match => {
+            const date = new Date(match.time);
+
+            const time = date.toLocaleString("sq-AL", {
+                timeZone: "Europe/Tirane",
+                day: "2-digit",
+                month: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+
+            const isLive = match.status === "live";
+            const isFinished = match.status === "finished";
+
+            const score = isLive || isFinished
+                ? `${match.home_score ?? 0} - ${match.away_score ?? 0}`
+                : "VS";
+
+            const card = document.createElement("article");
+            card.className = "match";
+
+            card.innerHTML = `
+                <div class="league">
+                    ${match.competition || sport.toUpperCase()}
+                </div>
+
+                <div class="teams">
+                    <span>${match.home}</span>
+                    <span class="vs">${score}</span>
+                    <span>${match.away}</span>
+                </div>
+
+                <div class="time">${time}</div>
+
+                <div class="demo">
+                    ${isLive ? "🔴 LIVE" : match.status_text || "Scheduled"}
+                </div>
+            `;
+
+            container.appendChild(card);
+        });
+
+    } catch (error) {
+        container.innerHTML =
+            "<p>Nuk u ngarkuan ndeshjet. Provo përsëri.</p>";
+        console.error(error);
+    }
+}
+
+function filterMatches(sport, button) {
+    document.querySelectorAll(".category").forEach(item => {
+        item.classList.remove("active");
+    });
+
+    button.classList.add("active");
+    loadMatches(sport);
+}
+
+loadMatches("football");
+
+setInterval(() => loadMatches(), 60000);
 </body>
 </html>
