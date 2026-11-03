@@ -221,7 +221,93 @@ footer a {
     color: #e50925;
     text-decoration: none;
 }
+/* REDZONE - Match Details Modal */
+.match-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.88);
+    padding: 20px;
+    overflow-y: auto;
+}
 
+.match-modal-content {
+    background: #171717;
+    border: 1px solid #333;
+    border-top: 4px solid #e50914;
+    border-radius: 14px;
+    max-width: 650px;
+    margin: 40px auto;
+    padding: 25px;
+    color: white;
+}
+
+.match-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.match-modal-header h2 {
+    color: #e50914;
+    margin: 0;
+}
+
+.match-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+.match-modal-teams {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 15px;
+    text-align: center;
+    margin: 25px 0;
+}
+
+.match-modal-team {
+    flex: 1;
+}
+
+.match-modal-team img {
+    width: 55px;
+    height: 55px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 10px;
+}
+
+.match-modal-score {
+    font-size: 25px;
+    font-weight: bold;
+    color: #e50914;
+}
+
+.match-detail-section {
+    background: #222;
+    padding: 15px;
+    border-radius: 9px;
+    margin-top: 15px;
+}
+
+.match-detail-section h3 {
+    color: #e50914;
+    margin-top: 0;
+}
+
+@media(max-width: 600px) {
+    .match-modal-content {
+        margin: 10px auto;
+        padding: 18px;
+    }
+}
 @media(max-width: 600px) {
     .hero h1 {
         font-size: 32px;
@@ -318,7 +404,16 @@ footer a {
     </section>
 
 </main>
+<div id="matchModal" class="match-modal">
+    <div class="match-modal-content">
+        <div class="match-modal-header">
+            <h2>REDZONE MATCH CENTER</h2>
+            <button class="match-close" onclick="closeMatchDetails()">&times;</button>
+        </div>
 
+        <div id="matchDetailsContent"></div>
+    </div>
+</div>
 <footer>
     <p>© 2026 REDZONE. All rights reserved.</p>
     <p>
@@ -487,7 +582,7 @@ async function loadMatches(sport, button) {
                 `${match.home}-${match.away}-${match.time}`;
 
             uniqueMatches.set(key, match);
-        });
+        });F
 
         allMatches = Array.from(uniqueMatches.values());
 
@@ -533,7 +628,95 @@ function setFilter(filter, button) {
 
     renderMatches();
 }
+function openMatchDetails(match) {
+    const modal = document.getElementById("matchModal");
+    const content = document.getElementById("matchDetailsContent");
 
+    content.replaceChildren();
+
+    const title = document.createElement("div");
+    title.className = "match-detail-section";
+    title.textContent = match.competition || currentSport.toUpperCase();
+    content.appendChild(title);
+
+    const teams = document.createElement("div");
+    teams.className = "match-modal-teams";
+
+    function addTeam(name, logo) {
+        const team = document.createElement("div");
+        team.className = "match-modal-team";
+
+        if (logo) {
+            const img = document.createElement("img");
+            img.src = logo;
+            img.alt = name || "Team";
+            img.onerror = function() {
+                this.style.display = "none";
+            };
+            team.appendChild(img);
+        }
+
+        const label = document.createElement("div");
+        label.textContent = name || "Unknown";
+        team.appendChild(label);
+
+        return team;
+    }
+
+    const home = addTeam(match.home, match.home_logo);
+    const away = addTeam(match.away, match.away_logo);
+
+    const score = document.createElement("div");
+    score.className = "match-modal-score";
+
+    const hasScore =
+        match.home_score !== null &&
+        match.home_score !== undefined &&
+        match.away_score !== null &&
+        match.away_score !== undefined;
+
+    score.textContent = hasScore
+        ? `${match.home_score} - ${match.away_score}`
+        : "VS";
+
+    teams.appendChild(home);
+    teams.appendChild(score);
+    teams.appendChild(away);
+    content.appendChild(teams);
+
+    const details = document.createElement("div");
+    details.className = "match-detail-section";
+
+    const date = document.createElement("p");
+    date.textContent = "Data: " + formatDate(match.time);
+
+    const status = document.createElement("p");
+    status.textContent = "Statusi: " + (match.status_text || "I panjohur");
+
+    details.appendChild(date);
+    details.appendChild(status);
+    content.appendChild(details);
+
+    const markets = document.createElement("div");
+    markets.className = "match-detail-section";
+
+    const heading = document.createElement("h3");
+    heading.textContent = "Tregjet dhe koeficientët";
+    markets.appendChild(heading);
+
+    const message = document.createElement("p");
+    message.textContent =
+        "Koeficientët Bet365 nuk janë ende të lidhur me platformën. Nuk shfaqim vlera të pavërtetuara.";
+    markets.appendChild(message);
+
+    content.appendChild(markets);
+
+    modal.style.display = "block";
+}
+
+function closeMatchDetails() {
+    document.getElementById("matchModal").style.display = "none";
+}
 function renderMatches() {
     const container = document.getElementById("matches");
     const searchInput = document.getElementById("teamSearch");
@@ -667,15 +850,8 @@ function renderMatches() {
 card.style.cursor = "pointer";
 
 card.addEventListener("click", () => {
-    if (match.url) {
-        window.open(match.url, "_blank");
-    } else {
-        alert("Detajet për këtë ndeshje nuk janë të disponueshme.");
-    }
+    openMatchDetails(match);
 });
-
-container.appendChild(card);
-    });
 }
 
 // Load football when the page opens
