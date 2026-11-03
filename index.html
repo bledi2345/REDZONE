@@ -1,865 +1,479 @@
+
 <!DOCTYPE html>
 <html lang="sq">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>REDZONE | Live Sports</title>
-
+<title>REDZONE | Sports Center</title>
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+:root {
+  --bg:#080b12;
+  --panel:#111722;
+  --panel2:#171f2d;
+  --red:#ed2948;
+  --text:#f4f6fa;
+  --muted:#8994a6;
+  --line:#222c3b;
+  --green:#27d58a;
 }
-
+* { box-sizing:border-box; }
 body {
-    background: #090909;
-    color: white;
-    font-family: Arial, sans-serif;
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial, sans-serif;
 }
-
-header {
-    background: #111;
-    border-bottom: 2px solid #e50925;
-    padding: 20px 6%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
+button,input { font:inherit; }
+button { cursor:pointer; }
+.layout { display:flex; min-height:100vh; }
+.sidebar {
+  width:235px;
+  background:#0d121c;
+  border-right:1px solid var(--line);
+  padding:26px 17px;
+  position:fixed;
+  inset:0 auto 0 0;
 }
-
 .logo {
-    font-size: 30px;
-    font-weight: 900;
-    color: #e50925;
-    letter-spacing: 2px;
+  font-size:27px;
+  font-weight:900;
+  letter-spacing:2px;
+  margin:4px 10px 38px;
 }
-
-nav a {
-    color: white;
-    text-decoration: none;
-    margin-left: 18px;
-    font-weight: bold;
+.logo span { color:var(--red); }
+.menu-label {
+  color:var(--muted);
+  font-size:11px;
+  letter-spacing:1.5px;
+  margin:25px 10px 12px;
 }
-
-nav a:hover {
-    color: #e50925;
+.nav-btn {
+  width:100%;
+  border:0;
+  color:#aeb8c8;
+  background:transparent;
+  text-align:left;
+  padding:13px 12px;
+  border-radius:9px;
+  margin:3px 0;
+  font-size:14px;
 }
-
+.nav-btn:hover,.nav-btn.active {
+  background:#251722;
+  color:white;
+}
+.nav-btn.active { border-left:3px solid var(--red); }
+.main { margin-left:235px; width:calc(100% - 235px); }
+.topbar {
+  height:75px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 35px;
+  border-bottom:1px solid var(--line);
+  background:#0b1019;
+}
+.topbar-title { font-weight:700; }
+.topbar small { color:var(--muted); }
+.status-pill {
+  background:#17251f;
+  color:var(--green);
+  padding:9px 13px;
+  border-radius:20px;
+  font-size:12px;
+}
+.content { max-width:1400px; margin:auto; padding:30px 35px; }
 .hero {
-    padding: 65px 6%;
-    background: linear-gradient(120deg, #350009, #090909 80%);
+  background:linear-gradient(115deg,#28121e,#151a2a 65%,#101724);
+  border:1px solid #392231;
+  border-radius:16px;
+  padding:30px;
+  margin-bottom:28px;
 }
-
-.hero h1 {
-    font-size: 45px;
-    margin-bottom: 15px;
+.hero-tag { color:#ff7187; font-size:11px; letter-spacing:2px; font-weight:bold; }
+.hero h1 { font-size:32px; margin:12px 0 8px; }
+.hero p { color:#aeb8c8; margin:0; line-height:1.5; }
+.section-head {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin:25px 0 17px;
 }
-
-.hero h1 span {
-    color: #e50925;
+.section-head h2 { font-size:19px; margin:0; }
+.filters { display:flex; gap:8px; flex-wrap:wrap; }
+.filter-btn {
+  border:1px solid var(--line);
+  color:#aeb8c8;
+  background:var(--panel);
+  padding:9px 14px;
+  border-radius:8px;
+  font-size:12px;
 }
-
-.hero p {
-    color: #bbb;
+.filter-btn.active {
+  background:var(--red);
+  border-color:var(--red);
+  color:white;
 }
-
-.container {
-    padding: 35px 6%;
+.toolbar {
+  display:flex;
+  gap:10px;
+  margin:18px 0;
+  flex-wrap:wrap;
 }
-
-.section-title {
-    font-size: 25px;
-    margin-bottom: 22px;
-    border-left: 4px solid #e50925;
-    padding-left: 12px;
+.toolbar input,.toolbar select {
+  background:var(--panel);
+  border:1px solid var(--line);
+  color:white;
+  padding:12px;
+  border-radius:8px;
+  min-width:180px;
+  outline:none;
 }
-
-.categories {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 25px;
+.toolbar input { flex:1; }
+.matches { display:grid; gap:12px; }
+.match-card {
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:17px 20px;
+  display:grid;
+  grid-template-columns:1fr 130px 1fr;
+  align-items:center;
+  gap:12px;
+  transition:.2s;
+  cursor:pointer;
 }
-
-.category {
-    background: #1b1b1b;
-    color: white;
-    border: 1px solid #333;
-    padding: 12px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
+.match-card:hover {
+  border-color:#754052;
+  transform:translateY(-2px);
+  background:var(--panel2);
 }
-
-.category.active,
-.category:hover {
-    background: #e50925;
-    border-color: #e50925;
+.competition {
+  grid-column:1/-1;
+  color:var(--muted);
+  font-size:12px;
+  border-bottom:1px solid var(--line);
+  padding-bottom:12px;
 }
-
-.status-line {
-    color: #aaa;
-    margin-bottom: 20px;
-    font-size: 13px;
-}
-
-.matches {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 18px;
-}
-
-.match {
-    background: #151515;
-    border: 1px solid #292929;
-    border-radius: 10px;
-    padding: 20px;
-    transition: 0.2s;
-}
-
-.match:hover {
-    border-color: #e50925;
-    transform: translateY(-3px);
-}
-
-.league {
-    color: #aaa;
-    font-size: 12px;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-}
-
-.teams {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-}
-
 .team {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    flex: 1;
-    gap: 9px;
-    min-width: 0;
+  display:flex;
+  align-items:center;
+  gap:11px;
+  font-weight:700;
+  font-size:14px;
 }
-
-.team img {
-    width: 42px;
-    height: 42px;
-    object-fit: contain;
-}
-
-.team-name {
-    font-size: 13px;
-    font-weight: bold;
-    overflow-wrap: anywhere;
-}
-
-.score {
-    font-size: 21px;
-    font-weight: 900;
-    color: white;
-    white-space: nowrap;
-}
-
-.match-info {
-    text-align: center;
-    margin-top: 20px;
-    color: #aaa;
-    font-size: 12px;
-}
-
-.match-status {
-    text-align: center;
-    margin-top: 12px;
-    color: #ddd;
-    font-size: 12px;
-    font-weight: bold;
-}
-
-.live {
-    color: #ff3048;
-}
-
-.finished {
-    color: #aaa;
-}
-
-.loading,
-.error,
+.team.away { justify-content:flex-end; text-align:right; }
+.team img { width:30px; height:30px; object-fit:contain; }
+.score-area { text-align:center; }
+.score { font-size:22px; font-weight:800; }
+.match-time { color:var(--muted); font-size:11px; margin-top:5px; }
+.match-status { font-size:11px; margin-top:6px; color:var(--green); }
+.match-status.finished { color:var(--muted); }
+.match-status.upcoming { color:#f2b95c; }
 .empty {
-    background: #151515;
-    border-radius: 8px;
-    padding: 25px;
-    color: #ccc;
-    text-align: center;
-    grid-column: 1 / -1;
+  background:var(--panel);
+  border:1px solid var(--line);
+  padding:35px;
+  text-align:center;
+  border-radius:12px;
+  color:var(--muted);
 }
-
-.results {
-    background: #151515;
-    border-radius: 10px;
-    padding: 22px;
-    margin-top: 35px;
+.footer {
+  padding:30px 10px;
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
 }
-
-footer {
-    text-align: center;
-    color: #777;
-    padding: 30px;
-    border-top: 1px solid #292929;
-    margin-top: 40px;
-    line-height: 2;
+.modal {
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:10;
+  background:#000b;
+  padding:20px;
+  overflow:auto;
 }
-
-footer a {
-    color: #e50925;
-    text-decoration: none;
+.modal-box {
+  max-width:600px;
+  margin:7vh auto;
+  background:var(--panel);
+  border:1px solid #344052;
+  border-radius:15px;
+  padding:24px;
 }
-/* REDZONE - Match Details Modal */
-.match-modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: rgba(0, 0, 0, 0.88);
-    padding: 20px;
-    overflow-y: auto;
+.modal-head {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid var(--line);
+  padding-bottom:15px;
 }
-
-.match-modal-content {
-    background: #171717;
-    border: 1px solid #333;
-    border-top: 4px solid #e50914;
-    border-radius: 14px;
-    max-width: 650px;
-    margin: 40px auto;
-    padding: 25px;
-    color: white;
+.modal-head h2 { font-size:16px; }
+.close {
+  border:0;
+  background:transparent;
+  color:white;
+  font-size:27px;
 }
-
-.match-modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
+.modal-teams {
+  display:grid;
+  grid-template-columns:1fr 90px 1fr;
+  align-items:center;
+  text-align:center;
+  gap:8px;
+  padding:30px 0;
 }
-
-.match-modal-header h2 {
-    color: #e50914;
-    margin: 0;
+.modal-team img { width:48px; height:48px; object-fit:contain; display:block; margin:0 auto 10px; }
+.modal-score { font-size:25px; font-weight:900; }
+.detail {
+  background:var(--panel2);
+  padding:15px;
+  border-radius:9px;
+  margin-top:12px;
+  color:#b9c3d2;
+  font-size:13px;
+  line-height:1.7;
 }
-
-.match-close {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 30px;
-    cursor: pointer;
-}
-
-.match-modal-teams {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    gap: 15px;
-    text-align: center;
-    margin: 25px 0;
-}
-
-.match-modal-team {
-    flex: 1;
-}
-
-.match-modal-team img {
-    width: 55px;
-    height: 55px;
-    object-fit: contain;
-    display: block;
-    margin: 0 auto 10px;
-}
-
-.match-modal-score {
-    font-size: 25px;
-    font-weight: bold;
-    color: #e50914;
-}
-
-.match-detail-section {
-    background: #222;
-    padding: 15px;
-    border-radius: 9px;
-    margin-top: 15px;
-}
-
-.match-detail-section h3 {
-    color: #e50914;
-    margin-top: 0;
-}
-
-@media(max-width: 600px) {
-    .match-modal-content {
-        margin: 10px auto;
-        padding: 18px;
-    }
-}
-@media(max-width: 600px) {
-    .hero h1 {
-        font-size: 32px;
-    }
-
-    nav a {
-        margin-left: 8px;
-        font-size: 13px;
-    }
-
-    .container {
-        padding: 25px 5%;
-    }
+@media(max-width:800px) {
+  .sidebar { width:65px; padding:20px 7px; }
+  .logo { font-size:17px; margin:8px 2px 30px; letter-spacing:0; }
+  .menu-label { display:none; }
+  .nav-btn { text-align:center; font-size:11px; padding:13px 3px; }
+  .nav-btn span { display:none; }
+  .main { margin-left:65px; width:calc(100% - 65px); }
+  .topbar { padding:0 15px; }
+  .content { padding:20px 13px; }
+  .hero { padding:22px; }
+  .hero h1 { font-size:25px; }
+  .match-card { grid-template-columns:1fr 75px 1fr; padding:14px 10px; }
+  .team { font-size:12px; gap:5px; }
+  .team img { width:23px; height:23px; }
+  .score { font-size:18px; }
 }
 </style>
 </head>
-
 <body>
 
-<header>
-    <div class="logo">REDZONE</div>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="logo">RED<span>ZONE</span></div>
+    <div class="menu-label">MENU KRYESORE</div>
+    <button class="nav-btn active" onclick="selectSport('football',this)">⚽ <span>Futboll</span></button>
+    <button class="nav-btn" onclick="selectSport('basketball',this)">🏀 <span>Basketboll</span></button>
+    <button class="nav-btn" onclick="selectSport('tennis',this)">🎾 <span>Tenis</span></button>
+    <div class="menu-label">PLATFORMA</div>
+    <button class="nav-btn" onclick="showInfo('Qendra e ndeshjeve')">▣ <span>Ndeshjet</span></button>
+    <button class="nav-btn" onclick="showInfo('Statistikat do të shtohen në fazën tjetër.')">▤ <span>Statistika</span></button>
+  </aside>
 
-    <nav>
-        <a href="#home">Home</a>
-        <a href="#sports">Sports</a>
-        <a href="#live">Live</a>
-    </nav>
-</header>
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-title">Sports Center <small> / REDZONE</small></div>
+      <div class="status-pill">● PLATFORMË DEMO</div>
+    </header>
 
-<section class="hero" id="home">
-    <h1>WELCOME TO <span>REDZONE</span></h1>
-    <p>Your sports world. All in one place.</p>
-</section>
+    <div class="content">
+      <section class="hero">
+        <div class="hero-tag">WELCOME TO REDZONE</div>
+        <h1>Çdo ndeshje. Një destinacion.</h1>
+        <p>Qendra jote sportive për ndeshje, rezultate dhe informacion.</p>
+      </section>
 
-<main class="container" id="sports">
-
-   <h2 class="section-title" id="live">MATCH CENTER</h2>
-
-<div class="categories">
-    <button class="category active" onclick="setFilter('all', this)">Të gjitha</button>
-    <button class="category" onclick="setFilter('live', this)">🔴 LIVE</button>
-    <button class="category" onclick="setFilter('upcoming', this)">📅 Në vijim</button>
-    <button class="category" onclick="setFilter('finished', this)">✓ Të përfunduara</button>
-</div>
-    <div class="categories">
-        <button class="category active"
-            onclick="loadMatches('football', this)">
-            ⚽ Football
-        </button>
-
-        <button class="category"
-            onclick="loadMatches('basketball', this)">
-            🏀 Basketball
-        </button>
-
-        <button class="category"
-            onclick="loadMatches('tennis', this)">
-            🎾 Tennis
-        </button>
-    </div>
-<div class="search-panel">
-    <input
-        type="text"
-        id="teamSearch"
-        placeholder="🔍 Kërko skuadër ose kampionat..."
-        oninput="renderMatches()"
-    >
-
-    <select id="leagueFilter" onchange="renderMatches()">
-        <option value="all">Të gjitha kampionatet</option>
-    </select>
-</div>
-    <h2 class="section-title" id="live">Matches & Live Scores</h2>
-
-    <div class="status-line" id="updateStatus">
-        Connecting to sports data...
-    </div>
-
-    <div class="matches" id="matches">
-        <div class="loading">Loading matches...</div>
-    </div>
-
-    <section class="results">
-        <h2 class="section-title">About REDZONE</h2>
-        <p>
-            REDZONE brings sports information and match results
-            together in one place.
-        </p>
-        <br>
-        <p>
-            Match data is provided by SportScore.
-            This is a sports information platform.
-        </p>
-    </section>
-
-</main>
-<div id="matchModal" class="match-modal">
-    <div class="match-modal-content">
-        <div class="match-modal-header">
-            <h2>REDZONE MATCH CENTER</h2>
-            <button class="match-close" onclick="closeMatchDetails()">&times;</button>
+      <div class="section-head">
+        <h2 id="sportTitle">⚽ Futboll</h2>
+        <div class="filters">
+          <button class="filter-btn active" onclick="setFilter('all',this)">Të gjitha</button>
+          <button class="filter-btn" onclick="setFilter('live',this)">Live</button>
+          <button class="filter-btn" onclick="setFilter('upcoming',this)">Sot</button>
+          <button class="filter-btn" onclick="setFilter('finished',this)">Përfunduara</button>
         </div>
+      </div>
 
-        <div id="matchDetailsContent"></div>
+      <div class="toolbar">
+        <input id="search" type="search" placeholder="Kërko ekipin ose kampionatin..." oninput="renderMatches()">
+        <select id="league" onchange="renderMatches()">
+          <option value="all">Të gjitha kampionatet</option>
+        </select>
+      </div>
+
+      <div id="matches" class="matches"></div>
+      <div class="footer">REDZONE © 2026 · Sports Information Platform</div>
     </div>
+  </main>
 </div>
-<footer>
-    <p>© 2026 REDZONE. All rights reserved.</p>
-    <p>
-        Data provided by
-        <a href="https://sportscore.com/"
-           target="_blank"
-           rel="dofollow">
-           SportScore
-        </a>
-    </p>
-</footer>
+
+<div class="modal" id="matchModal" onclick="outsideClose(event)">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>REDZONE MATCH CENTER</h2>
+      <button class="close" onclick="closeMatchDetails()">×</button>
+    </div>
+    <div id="matchDetailsContent"></div>
+  </div>
+</div>
 
 <script>
-const API = "https://sportscore.com/api/v1/fixtures/";
+const demoMatches = {
+  football: [
+    {home:"Real Madrid",away:"Barcelona",competition:"La Liga",time:"21:00",status:"upcoming",home_score:null,away_score:null},
+    {home:"Manchester City",away:"Arsenal",competition:"Premier League",time:"18:30",status:"live",home_score:1,away_score:1},
+    {home:"Inter",away:"AC Milan",competition:"Serie A",time:"20:45",status:"finished",home_score:2,away_score:1},
+    {home:"Bayern Munich",away:"Borussia Dortmund",competition:"Bundesliga",time:"17:30",status:"upcoming",home_score:null,away_score:null}
+  ],
+  basketball: [
+    {home:"LA Lakers",away:"Boston Celtics",competition:"NBA",time:"20:00",status:"upcoming",home_score:null,away_score:null},
+    {home:"Chicago Bulls",away:"Miami Heat",competition:"NBA",time:"19:30",status:"live",home_score:55,away_score:49}
+  ],
+  tennis: [
+    {home:"Player A",away:"Player B",competition:"ATP Tour",time:"16:00",status:"live",home_score:1,away_score:0},
+    {home:"Player C",away:"Player D",competition:"WTA Tour",time:"18:00",status:"upcoming",home_score:null,away_score:null}
+  ]
+};
 
 let currentSport = "football";
 let currentFilter = "all";
-let allMatches = [];
-let requestNumber = 0;
+let allMatches = demoMatches.football;
 
-function createTeam(name, logo) {
-    const team = document.createElement("div");
-    team.className = "team";
-
-    if (logo) {
-        const img = document.createElement("img");
-        img.src = logo;
-        img.alt = name || "Team";
-        img.onerror = function() {
-            this.style.display = "none";
-        };
-        team.appendChild(img);
-    }
-
-    const label = document.createElement("div");
-    label.className = "team-name";
-    label.textContent = name || "Unknown";
-    team.appendChild(label);
-
-    return team;
+function selectSport(sport,button) {
+  currentSport = sport;
+  allMatches = demoMatches[sport];
+  currentFilter = "all";
+  document.querySelectorAll(".sidebar .nav-btn").forEach(b=>b.classList.remove("active"));
+  button.classList.add("active");
+  document.getElementById("sportTitle").textContent =
+    sport==="football" ? "⚽ Futboll" :
+    sport==="basketball" ? "🏀 Basketboll" : "🎾 Tenis";
+  document.querySelectorAll(".filter-btn").forEach((b,i)=>b.classList.toggle("active",i===0));
+  document.getElementById("search").value = "";
+  renderMatches();
 }
 
-function formatDate(value) {
-    if (!value) return "Ora e padisponueshme";
-
-    const date = new Date(value);
-
-    if (Number.isNaN(date.getTime())) {
-        return "Ora e padisponueshme";
-    }
-
-    return date.toLocaleString("sq-AL", {
-        timeZone: "Europe/Tirane",
-        day: "2-digit",
-        month: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit"
-    });
+function setFilter(filter,button) {
+  currentFilter = filter;
+  document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
+  button.classList.add("active");
+  renderMatches();
 }
 
-function showMessage(message, className) {
-    const container = document.getElementById("matches");
-    const box = document.createElement("div");
+function renderMatches() {
+  const container = document.getElementById("matches");
+  const search = document.getElementById("search").value.toLowerCase().trim();
+  const leagueSelect = document.getElementById("league");
+  const oldLeague = leagueSelect.value;
 
-    box.className = className;
-    box.textContent = message;
-    container.replaceChildren(box);
-}
+  const leagues = [...new Set(allMatches.map(m=>m.competition))];
+  leagueSelect.innerHTML = '<option value="all">Të gjitha kampionatet</option>';
+  leagues.forEach(name=>{
+    const option = document.createElement("option");
+    option.value = name;
+    option.textContent = name;
+    leagueSelect.appendChild(option);
+  });
+  leagueSelect.value = leagues.includes(oldLeague) ? oldLeague : "all";
 
-function getStatus(match) {
-    return String(match.status || "").toLowerCase();
-}
+  let filtered = allMatches.filter(match=>{
+    const matchesFilter = currentFilter==="all" || match.status===currentFilter;
+    const matchesLeague = leagueSelect.value==="all" || match.competition===leagueSelect.value;
+    const matchesSearch = (match.home+" "+match.away+" "+match.competition).toLowerCase().includes(search);
+    return matchesFilter && matchesLeague && matchesSearch;
+  });
 
-function isLive(match) {
-    return ["live", "in_progress"].includes(getStatus(match));
-}
+  container.replaceChildren();
 
-function isFinished(match) {
-    return getStatus(match) === "finished";
-}
+  if(filtered.length===0) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = "Nuk u gjet asnjë ndeshje.";
+    container.appendChild(empty);
+    return;
+  }
 
-function isUpcoming(match) {
-    return ["upcoming", "scheduled", "not_started"].includes(
-        getStatus(match)
-    );
-}
+  filtered.forEach(match=>{
+    const card = document.createElement("article");
+    card.className = "match-card";
 
-async function fetchDay(date, upcomingOnly = false) {
-    let url =
-        `${API}?sport=${encodeURIComponent(currentSport)}` +
-        `&date=${date}&limit=200`;
+    const competition = document.createElement("div");
+    competition.className = "competition";
+    competition.textContent = match.competition;
 
-    if (upcomingOnly) {
-        url += "&status=upcoming";
-    }
+    const home = document.createElement("div");
+    home.className = "team";
+    home.textContent = match.home;
 
-    const response = await fetch(url);
+    const away = document.createElement("div");
+    away.className = "team away";
+    away.textContent = match.away;
 
-    if (!response.ok) {
-        throw new Error("API error: " + response.status);
-    }
-
-    const data = await response.json();
-
-    return Array.isArray(data.matches) ? data.matches : [];
-}
-
-function getDateAfter(days) {
-    const date = new Date();
-    date.setUTCDate(date.getUTCDate() + days);
-    return date.toISOString().slice(0, 10);
-}
-
-async function loadMatches(sport, button) {
-    if (sport) {
-        currentSport = sport;
-    }
-
-    if (button && button.parentElement) {
-        button.parentElement.querySelectorAll(".category")
-            .forEach(item => item.classList.remove("active"));
-
-        button.classList.add("active");
-    }
-
-    const thisRequest = ++requestNumber;
-
-    showMessage("Duke ngarkuar ndeshjet...", "loading");
-
-    const updateStatus = document.getElementById("updateStatus");
-
-    try {
-        const dates = [];
-
-        for (let day = 0; day <= 7; day++) {
-            dates.push(getDateAfter(day));
-        }
-
-        const results = await Promise.allSettled(
-            dates.map((date, index) =>
-                fetchDay(date, index !== 0)
-            )
-        );
-
-        if (thisRequest !== requestNumber) return;
-
-        let matches = [];
-        let successfulRequests = 0;
-
-        results.forEach(result => {
-            if (result.status === "fulfilled") {
-                successfulRequests++;
-                matches.push(...result.value);
-            }
-        });
-
-        if (successfulRequests === 0) {
-            throw new Error("No API requests succeeded");
-        }
-
-        // Remove duplicate matches
-        const uniqueMatches = new Map();
-
-        matches.forEach(match => {
-            const key = match.url ||
-                `${match.home}-${match.away}-${match.time}`;
-
-            uniqueMatches.set(key, match);
-        });F
-
-        allMatches = Array.from(uniqueMatches.values());
-
-        // Sort matches by starting time
-        allMatches.sort((a, b) =>
-            new Date(a.time || 0) - new Date(b.time || 0)
-        );
-
-        renderMatches();
-
-        if (updateStatus) {
-            updateStatus.textContent =
-                `REDZONE · ${allMatches.length} ndeshje · Përditësuar ${
-                    new Date().toLocaleTimeString("sq-AL")
-                }`;
-        }
-
-    } catch (error) {
-        console.error(error);
-
-        if (thisRequest === requestNumber) {
-            showMessage(
-                "Nuk mund të ngarkohen ndeshjet. Provo përsëri.",
-                "error"
-            );
-
-            if (updateStatus) {
-                updateStatus.textContent = "Problem me lidhjen.";
-            }
-        }
-    }
-}
-
-function setFilter(filter, button) {
-    currentFilter = filter;
-
-    if (button && button.parentElement) {
-        button.parentElement.querySelectorAll(".category")
-            .forEach(item => item.classList.remove("active"));
-
-        button.classList.add("active");
-    }
-
-    renderMatches();
-}
-function openMatchDetails(match) {
-    const modal = document.getElementById("matchModal");
-    const content = document.getElementById("matchDetailsContent");
-
-    content.replaceChildren();
-
-    const title = document.createElement("div");
-    title.className = "match-detail-section";
-    title.textContent = match.competition || currentSport.toUpperCase();
-    content.appendChild(title);
-
-    const teams = document.createElement("div");
-    teams.className = "match-modal-teams";
-
-    function addTeam(name, logo) {
-        const team = document.createElement("div");
-        team.className = "match-modal-team";
-
-        if (logo) {
-            const img = document.createElement("img");
-            img.src = logo;
-            img.alt = name || "Team";
-            img.onerror = function() {
-                this.style.display = "none";
-            };
-            team.appendChild(img);
-        }
-
-        const label = document.createElement("div");
-        label.textContent = name || "Unknown";
-        team.appendChild(label);
-
-        return team;
-    }
-
-    const home = addTeam(match.home, match.home_logo);
-    const away = addTeam(match.away, match.away_logo);
+    const scoreArea = document.createElement("div");
+    scoreArea.className = "score-area";
 
     const score = document.createElement("div");
-    score.className = "match-modal-score";
+    score.className = "score";
+    score.textContent = match.status==="upcoming" ? "VS" : `${match.home_score} - ${match.away_score}`;
 
-    const hasScore =
-        match.home_score !== null &&
-        match.home_score !== undefined &&
-        match.away_score !== null &&
-        match.away_score !== undefined;
+    const time = document.createElement("div");
+    time.className = "match-time";
+    time.textContent = match.time;
 
-    score.textContent = hasScore
-        ? `${match.home_score} - ${match.away_score}`
-        : "VS";
+    const status = document.createElement("div");
+    status.className = "match-status "+match.status;
+    status.textContent = match.status==="live" ? "● LIVE" :
+      match.status==="finished" ? "PËRFUNDUAR" : "SË SHPEJTI";
 
-    teams.appendChild(home);
-    teams.appendChild(score);
-    teams.appendChild(away);
-    content.appendChild(teams);
+    scoreArea.append(score,time,status);
+    card.append(competition,home,scoreArea,away);
+    card.addEventListener("click",()=>openMatchDetails(match));
+    container.appendChild(card);
+  });
+}
 
-    const details = document.createElement("div");
-    details.className = "match-detail-section";
+function openMatchDetails(match) {
+  const content = document.getElementById("matchDetailsContent");
+  content.replaceChildren();
 
-    const date = document.createElement("p");
-    date.textContent = "Data: " + formatDate(match.time);
+  const teams = document.createElement("div");
+  teams.className = "modal-teams";
 
-    const status = document.createElement("p");
-    status.textContent = "Statusi: " + (match.status_text || "I panjohur");
+  const home = document.createElement("div");
+  home.className = "modal-team";
+  home.textContent = match.home;
 
-    details.appendChild(date);
-    details.appendChild(status);
-    content.appendChild(details);
+  const score = document.createElement("div");
+  score.className = "modal-score";
+  score.textContent = match.status==="upcoming" ? "VS" : `${match.home_score} - ${match.away_score}`;
 
-    const markets = document.createElement("div");
-    markets.className = "match-detail-section";
+  const away = document.createElement("div");
+  away.className = "modal-team";
+  away.textContent = match.away;
 
-    const heading = document.createElement("h3");
-    heading.textContent = "Tregjet dhe koeficientët";
-    markets.appendChild(heading);
+  teams.append(home,score,away);
 
-    const message = document.createElement("p");
-    message.textContent =
-        "Koeficientët Bet365 nuk janë ende të lidhur me platformën. Nuk shfaqim vlera të pavërtetuara.";
-    markets.appendChild(message);
+  const details = document.createElement("div");
+  details.className = "detail";
+  details.textContent = "Kampionati: "+match.competition+" | Ora: "+match.time;
 
-    content.appendChild(markets);
+  const note = document.createElement("div");
+  note.className = "detail";
+  note.textContent = "Këto janë të dhëna demonstrimi. Lidhja me rezultatet reale dhe statistikat do të konfigurohet veçmas.";
 
-    modal.style.display = "block";
+  content.append(teams,details,note);
+  document.getElementById("matchModal").style.display = "block";
 }
 
 function closeMatchDetails() {
-    document.getElementById("matchModal").style.display = "none";
+  document.getElementById("matchModal").style.display = "none";
 }
-function renderMatches() {
-    const container = document.getElementById("matches");
-    const searchInput = document.getElementById("teamSearch");
-    const leagueSelect = document.getElementById("leagueFilter");
 
-    const searchText = searchInput
-        ? searchInput.value.toLowerCase().trim()
-        : "";
-
-    const selectedLeague = leagueSelect
-        ? leagueSelect.value
-        : "all";
-
-    // Create the league list automatically
-    const leagues = [...new Set(
-        allMatches.map(match => match.competition).filter(Boolean)
-    )].sort();
-
-    if (leagueSelect) {
-        const previousValue = leagueSelect.value;
-
-        leagueSelect.innerHTML =
-            '<option value="all">Të gjitha kampionatet</option>';
-
-        leagues.forEach(league => {
-            const option = document.createElement("option");
-            option.value = league;
-            option.textContent = league;
-            leagueSelect.appendChild(option);
-        });
-
-        leagueSelect.value = leagues.includes(previousValue)
-            ? previousValue
-            : "all";
-    }
-
-    let filteredMatches = allMatches;
-
-    if (currentFilter === "live") {
-        filteredMatches = filteredMatches.filter(isLive);
-    } else if (currentFilter === "upcoming") {
-        filteredMatches = filteredMatches.filter(isUpcoming);
-    } else if (currentFilter === "finished") {
-        filteredMatches = filteredMatches.filter(isFinished);
-    }
-
-    if (selectedLeague !== "all") {
-        filteredMatches = filteredMatches.filter(
-            match => match.competition === selectedLeague
-        );
-    }
-
-    if (searchText) {
-        filteredMatches = filteredMatches.filter(match => {
-            const home = (match.home || "").toLowerCase();
-            const away = (match.away || "").toLowerCase();
-            const league = (match.competition || "").toLowerCase();
-
-            return home.includes(searchText) ||
-                   away.includes(searchText) ||
-                   league.includes(searchText);
-        });
-    }
-
-    container.replaceChildren();
-
-    if (filteredMatches.length === 0) {
-        showMessage(
-            "Nuk u gjet asnjë ndeshje.",
-            "empty"
-        );
-        return;
-    }
-
-    filteredMatches.forEach(match => {
-        const card = document.createElement("article");
-        card.className = "match";
-
-        const league = document.createElement("div");
-        league.className = "league";
-        league.textContent =
-            match.competition || currentSport.toUpperCase();
-
-        const teams = document.createElement("div");
-        teams.className = "teams";
-
-        const home = createTeam(match.home, match.home_logo);
-        const away = createTeam(match.away, match.away_logo);
-
-        const score = document.createElement("div");
-        score.className = "score";
-
-        const hasScore =
-            match.home_score !== null &&
-            match.home_score !== undefined &&
-            match.away_score !== null &&
-            match.away_score !== undefined;
-
-        score.textContent = hasScore
-            ? `${match.home_score} - ${match.away_score}`
-            : "VS";
-
-        teams.appendChild(home);
-        teams.appendChild(score);
-        teams.appendChild(away);
-
-        const date = document.createElement("div");
-        date.className = "match-info";
-        date.textContent = formatDate(match.time);
-
-        const matchStatus = document.createElement("div");
-        matchStatus.className = "match-status";
-        matchStatus.textContent =
-            match.status_text || "Scheduled";
-
-        if (isLive(match)) {
-            matchStatus.classList.add("live");
-            matchStatus.textContent =
-                "🔴 " + (match.status_text || "LIVE");
-        } else if (isFinished(match)) {
-            matchStatus.classList.add("finished");
-            matchStatus.textContent =
-                match.status_text || "Përfunduar";
-        }
-
-        card.appendChild(league);
-        card.appendChild(teams);
-        card.appendChild(date);
-       card.appendChild(matchStatus);
-
-card.addEventListener("click", () => {
-    openMatchDetails(match);
-});
-});
+function outsideClose(event) {
+  if(event.target.id==="matchModal") closeMatchDetails();
 }
-// Load football when the page opens
-loadMatches("football");
 
-// Refresh matches every 5 minutes
-setInterval(() => {
-    loadMatches(currentSport);
-}, 300000);
+function showInfo(message) {
+  alert(message);
+}
 
+renderMatches();
 </script>
 </body>
 </html>
