@@ -847,13 +847,11 @@ function renderMatches() {
         card.appendChild(date);
        card.appendChild(matchStatus);
 
-card.style.cursor = "pointer";
-
 card.addEventListener("click", () => {
     openMatchDetails(match);
 });
+});
 }
-
 // Load football when the page opens
 loadMatches("football");
 
